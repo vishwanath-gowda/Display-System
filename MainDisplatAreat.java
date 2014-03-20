@@ -3,10 +3,12 @@ package rvce.Display.com;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
@@ -16,10 +18,11 @@ import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 
 import org.apache.poi.hslf.HSLFSlideShow;
-import org.apache.poi.hslf.model.Notes;
 import org.apache.poi.hslf.model.Slide;
-import org.apache.poi.hslf.model.TextRun;
 import org.apache.poi.hslf.usermodel.SlideShow;
+import org.apache.poi.xslf.usermodel.XMLSlideShow;
+import org.apache.poi.xslf.usermodel.XSLFSlide;
+
 
 public class MainDisplatAreat implements Runnable{
 
@@ -37,47 +40,47 @@ public class MainDisplatAreat implements Runnable{
 	byte[] data;
 	Timer t=null;
 	String Ext;
-	
+
 	@Override
 	public void run() {
 		System.out.println("it came to main thread");
 		int i;
-		
+
 		for(;;){
 			try{
-			for(i=0;i<10;i++){
-				if(i<3){
-					dirName="f:\\Priority1";
-					displayFolderContents();
-					dirName="f:\\Priority2";
-					displayFolderContents();
-					dirName="f:\\Priority3";
-					displayFolderContents();
-				}else if(i>=3&&i<7){
+				for(i=0;i<10;i++){
+					if(i<3){
+						dirName="f:\\Priority1";
+						displayFolderContents();
+						dirName="f:\\Priority2";
+						displayFolderContents();
+						dirName="f:\\Priority3";
+						displayFolderContents();
+					}else if(i>=3&&i<7){
 
-					dirName="f:\\Priority1";
-					displayFolderContents();
-					dirName="f:\\Priority2";
-					displayFolderContents();
+						dirName="f:\\Priority1";
+						displayFolderContents();
+						dirName="f:\\Priority2";
+						displayFolderContents();
 
 
-				}else{
-					dirName="f:\\Priority1";
-					displayFolderContents();
+					}else{
+						dirName="f:\\Priority1";
+						displayFolderContents();
+
+					}
 
 				}
 
+			}catch(InterruptedException ie){
+				System.out.println("closing myself");
+				System.exit(0);
+
+
+			}catch(Exception e){
+				System.out.println(e.getStackTrace());
 			}
-		
-		}catch(InterruptedException ie){
-			System.out.println("closing myself");
-			System.exit(0);
-			
-			
-		}catch(Exception e){
-			System.out.println(e.getStackTrace());
-		}
-	}}
+		}}
 
 
 
@@ -91,58 +94,61 @@ public class MainDisplatAreat implements Runnable{
 				System.out.println("That file is not a directory.");
 		}
 		else {
-			
-				files = dir.list();
-				files=getUnExpiredContentOnly();
-				for (int i = 0; i < files.length; i++){
-					Ext=files[i].substring(files[i].lastIndexOf("."), files[i].length());
-					//System.out.println(files[i]+" has extension "+Ext);
-					if(Ext.equalsIgnoreCase(".txt")){
-						//System.out.println(".txt comparision worked");
-						openFile=new File(dirName+"\\"+files[i]);
-						fis = new FileInputStream(openFile);
-						data = new byte[(int)openFile.length()];
-						fis.read(data);
-						fis.close();
-						//System.out.println("in file");
-						String s = new String(data, "UTF-8");
-						//System.out.println("Ffile read and its content is "+s);
 
-						textpanel.setVisible(true);
-						imagepanel.setVisible(false);
-						htmlpanel.setVisible(false);
-						MainWindow.textArea.setText(s);
+			files = dir.list();
+			files=getUnExpiredContentOnly();
+			for (int i = 0; i < files.length; i++){
+				Ext=files[i].substring(files[i].lastIndexOf("."), files[i].length());
+				//System.out.println(files[i]+" has extension "+Ext);
+				if(Ext.equalsIgnoreCase(".txt")){
+					//System.out.println(".txt comparision worked");
+					openFile=new File(dirName+"\\"+files[i]);
+					fis = new FileInputStream(openFile);
+					data = new byte[(int)openFile.length()];
+					fis.read(data);
+					fis.close();
+					//System.out.println("in file");
+					String s = new String(data, "UTF-8");
+					//System.out.println("Ffile read and its content is "+s);
 
-						TimeUnit.SECONDS.sleep(5);
-					}else if(Ext.equalsIgnoreCase(".html")){
-						System.out.println("In html case and setting page");
-						textpanel.setVisible(false);
-						imagepanel.setVisible(false);
-						MainWindow.htmlpane.setPage("file:///"+dirName+"\\"+files[i]);
-						htmlpanel.setVisible(true);
-						TimeUnit.SECONDS.sleep(2);
+					textpanel.setVisible(true);
+					imagepanel.setVisible(false);
+					htmlpanel.setVisible(false);
+					MainWindow.textArea.setText(s);
+
+					TimeUnit.SECONDS.sleep(5);
+				}else if(Ext.equalsIgnoreCase(".html")){
+					System.out.println("In html case and setting page");
+					textpanel.setVisible(false);
+					imagepanel.setVisible(false);
+					MainWindow.htmlpane.setPage("file:///"+dirName+"\\"+files[i]);
+					htmlpanel.setVisible(true);
+					TimeUnit.SECONDS.sleep(2);
+
+
+				}else if(Ext.equalsIgnoreCase(".ppt")){
+					Display(dirName+"/"+files[i]);
 					
-						
-					}else if(Ext.equalsIgnoreCase(".ppt")){
-						Display(dirName+"/"+files[i]);
-						System.out.println("comparision successfull");
-					}
-					else{
-						//System.out.println(".jpg comparision worked");
-						MainWindow.lblRvce.setIcon(new ImageIcon(dirName+"\\"+files[i]));
-						textpanel.setVisible(false);
-						imagepanel.setVisible(true);
-						htmlpanel.setVisible(false);
-						
-						TimeUnit.SECONDS.sleep(2);
-					}
+				}else if(Ext.equalsIgnoreCase(".pptx")){
+					Displaypptx(dirName+"/"+files[i]);
+					System.out.println("pptx comparision successfull");
 				}
-				//MainWindow.textArea.setText("");
+				else{
+					//System.out.println(".jpg comparision worked");
+					MainWindow.lblRvce.setIcon(new ImageIcon(dirName+"\\"+files[i]));
+					textpanel.setVisible(false);
+					imagepanel.setVisible(true);
+					htmlpanel.setVisible(false);
 
-			}		
-			
-		}
-	
+					TimeUnit.SECONDS.sleep(2);
+				}
+			}
+			//MainWindow.textArea.setText("");
+
+		}		
+
+	}
+
 
 	public String[] getUnExpiredContentOnly() {
 		//System.out.println("in unexp");
@@ -204,42 +210,46 @@ public class MainDisplatAreat implements Runnable{
 	public void Display(String source) 
 	{ 
 		System.out.println("in display method");
-	try { 
-	// Create a slideshow object; this creates an underlying POIFSFileSystem object for us 
-		System.out.println("No prob");
-		SlideShow ppt = new SlideShow(new HSLFSlideShow(source)); 
-	
-		System.out.println("No prob");
-	// Get all of the slides from the PPT file 
-	Slide[] slides = ppt.getSlides(); 
-	Dimension pgsize = ppt.getPageSize(); 
-	//pgsize.width=2000;
-	//pgsize.height=600;
-	 
-	//String temp=""; 
-	//lblPage.setText(currentPage+" / "+all); 
-for(int i=0;i<slides.length;i++){
-	
-	
-	BufferedImage img = new BufferedImage(pgsize.width, pgsize.height, BufferedImage.TYPE_INT_RGB); 
-	//System.out.println(pgsize.width+" "+pgsize.height);
-	Graphics2D graphics = img.createGraphics(); 
-	//clear the drawing area 
-	graphics.setPaint(Color.white); 
-	//graphics.setBackground(Color.red); 
-	graphics.fill(new Rectangle2D.Float(0, 0, pgsize.width, pgsize.height)); 
+		try { 
+			// Create a slideshow object; this creates an underlying POIFSFileSystem object for us 
+			System.out.println("No prob");
+			SlideShow ppt = new SlideShow(new HSLFSlideShow(source)); 
 
-	//render 
-	slides[i].draw(graphics); 
-	//save the output 
-	/*FileOutputStream out = new FileOutputStream("slide-" + (i + 1) + ".png"); 
+			System.out.println("No prob");
+			// Get all of the slides from the PPT file 
+			Slide[] slides = ppt.getSlides(); 
+			Dimension pgsize = ppt.getPageSize(); 
+			//pgsize.width=2000;
+			//pgsize.height=600;
+			double zoom = 1; // magnify it by 2
+			AffineTransform at = new AffineTransform();
+			at.setToScale(zoom, zoom);
+
+			//String temp=""; 
+			//lblPage.setText(currentPage+" / "+all); 
+			for(int i=0;i<slides.length;i++){
+
+
+				BufferedImage img = new BufferedImage(pgsize.width, pgsize.height, BufferedImage.TYPE_INT_RGB); 
+				//System.out.println(pgsize.width+" "+pgsize.height);
+				Graphics2D graphics = img.createGraphics(); 
+				//clear the drawing area 
+				graphics.setPaint(Color.white); 
+				//graphics.setBackground(Color.red); 
+				graphics.fill(new Rectangle2D.Float(0, 0, pgsize.width, pgsize.height)); 
+				graphics.setTransform(at);
+
+				//render 
+				slides[i].draw(graphics); 
+				//save the output 
+				/*FileOutputStream out = new FileOutputStream("slide-" + (i + 1) + ".png"); 
 	javax.imageio.ImageIO.write(img, "png", out); 
 	out.close(); 
 	//ImageIcon icon = new ImageIcon("slide-" + (i + 1) + ".png");*/ 
-	ImageIcon icon = new ImageIcon(img); 
-	MainWindow.slidelabel.setIcon(icon); 
-	// Obtain metrics about the slide: its number and name 
-	/*int number = slides[currentPage-1].getSlideNumber(); 
+				ImageIcon icon = new ImageIcon(img); 
+				MainWindow.slidelabel.setIcon(icon); 
+				// Obtain metrics about the slide: its number and name 
+				/*int number = slides[currentPage-1].getSlideNumber(); 
 	String title = slides[currentPage-1].getTitle(); 
 
 	// Obtain the embedded text in the slide 
@@ -265,13 +275,41 @@ for(int i=0;i<slides.length;i++){
 	} 
 	} 
 
-	*/
-	TimeUnit.SECONDS.sleep(2);
-}
-	} catch (Exception e) { 
-	e.printStackTrace(); 
-	} 
-	
+				 */
+				TimeUnit.SECONDS.sleep(2);
+			}
+		} catch (Exception e) { 
+			e.printStackTrace(); 
+		} 
+
 	} 
 
+
+
+	public void Displaypptx(String source) throws IOException, InterruptedException{
+		FileInputStream is = new FileInputStream(source);
+		XMLSlideShow ppt = new XMLSlideShow(is);
+		is.close();
+
+		double zoom = 1; // magnify it by 2
+		AffineTransform at = new AffineTransform();
+		at.setToScale(zoom, zoom);
+
+		Dimension pgsize = ppt.getPageSize();
+
+		XSLFSlide[] slide = ppt.getSlides();
+		BufferedImage icons[]= new BufferedImage[slide.length];
+		for (int i = 0; i < slide.length; i++) {
+			icons[i]= new BufferedImage((int)Math.ceil(pgsize.width*zoom), (int)Math.ceil(pgsize.height*zoom), BufferedImage.TYPE_INT_RGB);
+			Graphics2D graphics = icons[i].createGraphics();
+			graphics.setTransform(at);
+
+			graphics.setPaint(Color.white);
+			graphics.fill(new Rectangle2D.Float(0, 0, pgsize.width, pgsize.height));
+			slide[i].draw(graphics);
+			ImageIcon icon = new ImageIcon(icons[i]); 
+			MainWindow.slidelabel.setIcon(icon); 
+			TimeUnit.SECONDS.sleep(2);
+		}
+	}
 }
