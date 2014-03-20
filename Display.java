@@ -36,7 +36,8 @@ import java.util.concurrent.TimeUnit;
 			{
 				files = dir.list();
 			//files=getUnExpiredContentOnly();
-				for (int i = 0; i < files.length; i++){
+				TimeUnit.SECONDS.sleep(2);
+				for (int i = 0; i <files.length; i++){
 
 					
 						openFile=new File(dirName+"\\"+files[i]);
@@ -50,10 +51,11 @@ import java.util.concurrent.TimeUnit;
 						
 						MainWindow.textArea.setText(s);
 					
-						TimeUnit.SECONDS.sleep(2);
+						
 						//MainWindow.textArea.setText("");
 				
 				}
+				TimeUnit.SECONDS.sleep(2);
 
 			}}catch(Exception fnf){
 				System.out.println(fnf.getLocalizedMessage());

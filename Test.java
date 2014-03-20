@@ -3,7 +3,6 @@ package rvce.Display.com;
 
 import java.awt.Color;
 import java.awt.Dimension;
-//import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -14,8 +13,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
-//import javax.swing.JFrame;
-//import javax.swing.JPanel;
 
 public class Test extends JComponent {
   /**
@@ -95,7 +92,7 @@ private BufferedImage image;
 
     int baselineOffset = (verticalPad / 2) - ((int) textBounds.getY());
 
-    //g2.setColor(Color.white);
+   // g2.setColor(Color.red);
     g2.fillRect(0, 0, imageSize.width, imageSize.height);
      Color title=new Color(0,0,0);
     g2.setColor(title);
@@ -117,7 +114,7 @@ private BufferedImage image;
     g.drawImage(image, imageSize.width - localOffset, 0, this);
 
     // draw outline
-    //g.setColor(Color.blue);
+   // g.setColor(Color.blue);
     //g.drawRect(0, 0, imageSize.width - 1, imageSize.height - 1);
   }
 
@@ -145,16 +142,5 @@ private BufferedImage image;
   public boolean isAlive() {
     return internalThread.isAlive();
   }
-/*
-  public static void main(String[] args) {
-    Test st = new Test("Java can do animation!");
 
-    JPanel p = new JPanel(new FlowLayout());
-    p.add(st);
-
-    JFrame f = new JFrame("ScrollText Demo");
-    f.setContentPane(p);
-    f.setSize(400, 100);
-    f.setVisible(true);
-  }*/
 }

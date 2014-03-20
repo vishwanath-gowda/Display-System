@@ -1,9 +1,7 @@
 package rvce.Display.com;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import java.text.SimpleDateFormat;
-import java.text.*;
+import java.util.Date;
  
 public class GetCurrentTimeStamp 
 {

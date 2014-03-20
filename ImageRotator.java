@@ -2,7 +2,6 @@ package rvce.Display.com;
 
 import java.io.File;
 import java.io.FileInputStream;
-
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 

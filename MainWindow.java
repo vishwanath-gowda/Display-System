@@ -9,6 +9,8 @@ import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,6 +23,7 @@ import java.util.Scanner;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -30,7 +33,7 @@ import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.MatteBorder;
-import javax.swing.JEditorPane;
+import java.awt.ComponentOrientation;
 
 
 public class MainWindow extends JFrame {
@@ -79,7 +82,8 @@ byte[] data;
 public static JPanel textpanel=null;
 public static JTextArea textArea=null;
 public static JEditorPane htmlpane=null;
-public Thread MainDisplayArea_t_o=null;
+public static JPanel pptpanel=null;
+public static Thread MainDisplayArea_t_o=null;
 double scrollLabel_x;
 double scrollLabel_y;
 double scrollLabel_width;
@@ -122,6 +126,7 @@ double lblTime_x;
 double lblTime_y;
 double lblTime_width;
 double lblTime_height;
+static JLabel slidelabel;
 /**
  * 
  */
@@ -134,6 +139,56 @@ double lblTime_height;
 				try {
 					MainWindow frame = new MainWindow();
 					frame.setVisible(true);
+					frame.addWindowListener(new WindowListener() {
+						
+						@Override
+						public void windowOpened(WindowEvent e) {
+							// TODO Auto-generated method stub
+							System.out.println("opened");
+						}
+						
+						@Override
+						public void windowIconified(WindowEvent e) {
+							// TODO Auto-generated method stub
+							System.out.println("windowIconified");
+						}
+						
+						@Override
+						public void windowDeiconified(WindowEvent e) {
+							// TODO Auto-generated method stub
+							System.out.println("windowDeiconified");
+						}
+						
+						@Override
+						public void windowDeactivated(WindowEvent e) {
+							// TODO Auto-generated method stub
+							System.out.println("windowDeactivated");
+
+						}
+						
+						@Override
+						public void windowClosing(WindowEvent e) {
+							// TODO Auto-generated method stub
+							System.out.println("windowClosing");
+							//MainDisplayArea_t_o.interrupt();
+							System.exit(0);
+
+						}
+						
+						@Override
+						public void windowClosed(WindowEvent e) {
+							// TODO Auto-generated method stub
+							System.out.println("windowClosed");
+
+						}
+						
+						@Override
+						public void windowActivated(WindowEvent e) {
+							// TODO Auto-generated method stub
+							System.out.println("windowActivated");
+
+						}
+					});
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -280,6 +335,7 @@ double lblTime_height;
 				
 		imageIcon = new ImageIcon("\\Icon\\logo4.png");
         lblIcon = new MyJLabel(imageIcon);
+        lblIcon.setHorizontalAlignment(SwingConstants.CENTER);
 		lblIcon.setBorder(border);
 		//lblIcon.setBounds(10, 11, 46, 47);
 		lblIcon.setBackground(Color.WHITE);
@@ -292,7 +348,9 @@ double lblTime_height;
 		lblIcon.setBorder(new MatteBorder(1, 1, 1, 1, (Color) Color.DARK_GRAY));
 		titlepanel.add(lblIcon);
 		
-		title = new JLabel("Welcome to RVCE");
+		Test t=new Test("Welcome to RVCE, CSE Deprtment");
+		title = new JLabel();
+		title.add(t);
 		title.setHorizontalAlignment(SwingConstants.CENTER);
 		title.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		title.setBackground(Color.WHITE);
@@ -397,7 +455,12 @@ double lblTime_height;
 		//System.out.println("file read and its content is "+s);*/
 		
 		textArea = new JTextArea();
-		textArea.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		textArea.setWrapStyleWord(true);
+		textArea.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+		textArea.setAutoscrolls(false);
+		textArea.setTabSize(4);
+		textArea.setLineWrap(true);
+		textArea.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		textArea.setEditable(false);
 		textArea.setBounds((int)lblRvce_x,(int)lblRvce_y, (int)lblRvce_width, (int)lblRvce_height);
 		textpanel.add(textArea);
@@ -416,8 +479,22 @@ double lblTime_height;
 		htmlpane.setEditable(false);
 		htmlpane.setVisible(true);
 		htmlpane.setBounds((int)lblRvce_x,(int)lblRvce_y, (int)lblRvce_width, (int)lblRvce_height);
-		htmlpane.setPage("file:///f:\\Priority1\\abc_20140311000000_20150313000000.html");
+		//htmlpane.setPage("file:///f:\\Priority1\\1_20140311000000_20150330000000.html");
 		htmlpanel.add(htmlpane);
+		
+		pptpanel = new JPanel();
+		pptpanel.setBounds((int)imagepanel_x, (int)imagepanel_y,(int)imagepanel_width , (int)imagepanel_height);
+		contentPane.add(pptpanel);
+		pptpanel.setLayout(null);
+		
+		slidelabel = new JLabel("");
+		slidelabel.setHorizontalAlignment(SwingConstants.CENTER);
+		
+	slidelabel.setBounds((int)lblRvce_x,(int)lblRvce_y, (int)lblRvce_width, (int)lblRvce_height);
+		//lblRvce.setBounds(10,10, 1053, 582);
+	
+		pptpanel.add(slidelabel);
+		
 		
 		  lblIcon.repaint();
 		  setUndecorated(true);

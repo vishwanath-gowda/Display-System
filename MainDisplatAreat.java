@@ -1,5 +1,10 @@
 package rvce.Display.com;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Scanner;
@@ -9,6 +14,12 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.ImageIcon;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
+
+import org.apache.poi.hslf.HSLFSlideShow;
+import org.apache.poi.hslf.model.Notes;
+import org.apache.poi.hslf.model.Slide;
+import org.apache.poi.hslf.model.TextRun;
+import org.apache.poi.hslf.usermodel.SlideShow;
 
 public class MainDisplatAreat implements Runnable{
 
@@ -26,12 +37,14 @@ public class MainDisplatAreat implements Runnable{
 	byte[] data;
 	Timer t=null;
 	String Ext;
+	
 	@Override
 	public void run() {
 		System.out.println("it came to main thread");
 		int i;
-		try{
+		
 		for(;;){
+			try{
 			for(i=0;i<10;i++){
 				if(i<3){
 					dirName="f:\\Priority1";
@@ -55,14 +68,16 @@ public class MainDisplatAreat implements Runnable{
 				}
 
 			}
-		}
+		
 		}catch(InterruptedException ie){
 			System.out.println("closing myself");
-			return;
+			System.exit(0);
+			
+			
 		}catch(Exception e){
 			System.out.println(e.getStackTrace());
 		}
-	}
+	}}
 
 
 
@@ -98,7 +113,7 @@ public class MainDisplatAreat implements Runnable{
 						htmlpanel.setVisible(false);
 						MainWindow.textArea.setText(s);
 
-						TimeUnit.SECONDS.sleep(2);
+						TimeUnit.SECONDS.sleep(5);
 					}else if(Ext.equalsIgnoreCase(".html")){
 						System.out.println("In html case and setting page");
 						textpanel.setVisible(false);
@@ -108,7 +123,10 @@ public class MainDisplatAreat implements Runnable{
 						TimeUnit.SECONDS.sleep(2);
 					
 						
-					}				
+					}else if(Ext.equalsIgnoreCase(".ppt")){
+						Display(dirName+"/"+files[i]);
+						System.out.println("comparision successfull");
+					}
 					else{
 						//System.out.println(".jpg comparision worked");
 						MainWindow.lblRvce.setIcon(new ImageIcon(dirName+"\\"+files[i]));
@@ -183,22 +201,77 @@ public class MainDisplatAreat implements Runnable{
 
 
 
+	public void Display(String source) 
+	{ 
+		System.out.println("in display method");
+	try { 
+	// Create a slideshow object; this creates an underlying POIFSFileSystem object for us 
+		System.out.println("No prob");
+		SlideShow ppt = new SlideShow(new HSLFSlideShow(source)); 
+	
+		System.out.println("No prob");
+	// Get all of the slides from the PPT file 
+	Slide[] slides = ppt.getSlides(); 
+	Dimension pgsize = ppt.getPageSize(); 
+	//pgsize.width=2000;
+	//pgsize.height=600;
+	 
+	//String temp=""; 
+	//lblPage.setText(currentPage+" / "+all); 
+for(int i=0;i<slides.length;i++){
+	
+	
+	BufferedImage img = new BufferedImage(pgsize.width, pgsize.height, BufferedImage.TYPE_INT_RGB); 
+	//System.out.println(pgsize.width+" "+pgsize.height);
+	Graphics2D graphics = img.createGraphics(); 
+	//clear the drawing area 
+	graphics.setPaint(Color.white); 
+	//graphics.setBackground(Color.red); 
+	graphics.fill(new Rectangle2D.Float(0, 0, pgsize.width, pgsize.height)); 
 
+	//render 
+	slides[i].draw(graphics); 
+	//save the output 
+	/*FileOutputStream out = new FileOutputStream("slide-" + (i + 1) + ".png"); 
+	javax.imageio.ImageIO.write(img, "png", out); 
+	out.close(); 
+	//ImageIcon icon = new ImageIcon("slide-" + (i + 1) + ".png");*/ 
+	ImageIcon icon = new ImageIcon(img); 
+	MainWindow.slidelabel.setIcon(icon); 
+	// Obtain metrics about the slide: its number and name 
+	/*int number = slides[currentPage-1].getSlideNumber(); 
+	String title = slides[currentPage-1].getTitle(); 
 
+	// Obtain the embedded text in the slide 
+	TextRun[] textRuns = slides[currentPage-1].getTextRuns(); 
+	System.out.println("Slide " + number + ": " + title); 
+	System.out.println("\tText Runs"); 
+	txtArea.setText("Slide : " + number + " Title : " + title + "\n"); 
+	for (int j = 0; j < textRuns.length; j++) { 
+	// Display each of the text runs present on the slide 
+	System.out.println("\t\t" + j + ": " + textRuns[j].getText()); 
+	temp=txtArea.getText(); 
+	txtArea.setText(temp+"\t\t" + textRuns[j].getText() + "\n"); 
+	} 
 
+	// Obtain the notes for this slide 
+	System.out.println("\tNotes: "); 
+	Notes notes = slides[currentPage-1].getNotesSheet(); 
+	if (notes != null) { 
+	// Notes are comprised of an array of text runs 
+	TextRun[] notesTextRuns = notes.getTextRuns(); 
+	for (int j = 0; j < notesTextRuns.length; j++) { 
+	System.out.println("\t\t" + notesTextRuns[j].getText()); 
+	} 
+	} 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+	*/
+	TimeUnit.SECONDS.sleep(2);
+}
+	} catch (Exception e) { 
+	e.printStackTrace(); 
+	} 
+	
+	} 
 
 }
