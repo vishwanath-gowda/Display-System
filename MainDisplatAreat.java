@@ -20,8 +20,15 @@ import javax.swing.JPanel;
 import org.apache.poi.hslf.HSLFSlideShow;
 import org.apache.poi.hslf.model.Slide;
 import org.apache.poi.hslf.usermodel.SlideShow;
+import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xslf.usermodel.XSLFSlide;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 
 
 public class MainDisplatAreat implements Runnable{
@@ -116,7 +123,7 @@ public class MainDisplatAreat implements Runnable{
 					htmlpanel.setVisible(false);
 					MainWindow.textArea.setText(s);
 
-					TimeUnit.SECONDS.sleep(5);
+					TimeUnit.SECONDS.sleep(2);
 				}else if(Ext.equalsIgnoreCase(".html")){
 					System.out.println("In html case and setting page");
 					textpanel.setVisible(false);
@@ -127,10 +134,22 @@ public class MainDisplatAreat implements Runnable{
 
 
 				}else if(Ext.equalsIgnoreCase(".ppt")){
-					Display(dirName+"/"+files[i]);
-					
+					DisplayPpt(dirName+"/"+files[i]);
+
 				}else if(Ext.equalsIgnoreCase(".pptx")){
-					Displaypptx(dirName+"/"+files[i]);
+					DisplayPptx(dirName+"/"+files[i]);
+					System.out.println("pptx comparision successfull");
+				}
+				else if(Ext.equalsIgnoreCase(".doc")){
+					DisplayDoc(dirName+"/"+files[i]);
+					System.out.println("pptx comparision successfull");
+				}
+				else if(Ext.equalsIgnoreCase(".docx")){
+					DisplayDocx(dirName+"/"+files[i]);
+					System.out.println("pptx comparision successfull");
+				}
+				else if(Ext.equalsIgnoreCase(".pdf")){
+					DisplayPdf(dirName+"/"+files[i]);
 					System.out.println("pptx comparision successfull");
 				}
 				else{
@@ -150,7 +169,15 @@ public class MainDisplatAreat implements Runnable{
 	}
 
 
-	public String[] getUnExpiredContentOnly() {
+
+
+
+
+
+
+
+
+	private String[] getUnExpiredContentOnly() {
 		//System.out.println("in unexp");
 		//System.out.println("in getUnExpiredContentOnly");
 		String from=null,to=null,cur=null;
@@ -207,7 +234,7 @@ public class MainDisplatAreat implements Runnable{
 
 
 
-	public void Display(String source) 
+	private void DisplayPpt(String source) 
 	{ 
 		System.out.println("in display method");
 		try { 
@@ -286,7 +313,7 @@ public class MainDisplatAreat implements Runnable{
 
 
 
-	public void Displaypptx(String source) throws IOException, InterruptedException{
+	private void DisplayPptx(String source) throws IOException, InterruptedException{
 		FileInputStream is = new FileInputStream(source);
 		XMLSlideShow ppt = new XMLSlideShow(is);
 		is.close();
@@ -312,4 +339,51 @@ public class MainDisplatAreat implements Runnable{
 			TimeUnit.SECONDS.sleep(2);
 		}
 	}
+
+
+	private void DisplayDocx(String source) throws IOException, InterruptedException {
+
+		FileInputStream fis = new FileInputStream(new File(source));
+		XWPFDocument doc = new XWPFDocument(fis);
+		XWPFWordExtractor extract = new XWPFWordExtractor(doc);
+		// System.out.println(extract.getText());
+		MainWindow.textArea.setText(extract.getText());
+		textpanel.setVisible(true);
+		imagepanel.setVisible(false);
+		htmlpanel.setVisible(false);
+		TimeUnit.SECONDS.sleep(2);
+
+
+	}
+	private void DisplayDoc(String source) throws IOException, InterruptedException {
+
+		FileInputStream fis = new FileInputStream(new File(source));
+		HWPFDocument doc = new HWPFDocument(fis);
+		WordExtractor extractor = new WordExtractor(doc);
+		// System.out.println(extractor.getText());
+		MainWindow.textArea.setText(extractor.getText());
+		textpanel.setVisible(true);
+		imagepanel.setVisible(false);
+		htmlpanel.setVisible(false);
+		TimeUnit.SECONDS.sleep(5);
+
+	}
+	private void DisplayPdf(String source) throws IOException, InterruptedException {
+		// TODO Auto-generated method stub
+		textpanel.setVisible(true);
+		imagepanel.setVisible(false);
+		htmlpanel.setVisible(false);
+		
+		String pageText;
+		 PdfReader reader = new PdfReader(source);
+	        int n = reader.getNumberOfPages();
+	        for(int i=1;i<=n;i++){
+	        	pageText=PdfTextExtractor.getTextFromPage(reader, i);
+	        	MainWindow.textArea.setText(pageText);
+	        	TimeUnit.SECONDS.sleep(2);
+	        }
+	        
+		
+	}
+
 }
