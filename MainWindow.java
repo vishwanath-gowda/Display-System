@@ -127,6 +127,7 @@ double lblTime_y;
 double lblTime_width;
 double lblTime_height;
 static JLabel slidelabel;
+int fontSize=50;
 /**
  * 
  */
@@ -460,9 +461,11 @@ static JLabel slidelabel;
 		textArea.setAutoscrolls(false);
 		textArea.setTabSize(4);
 		textArea.setLineWrap(true);
-		textArea.setFont(new Font("Times New Roman", Font.BOLD, 18));
+		textArea.setFont(new Font("Times New Roman", Font.BOLD, fontSize));
 		textArea.setEditable(false);
 		textArea.setBounds((int)lblRvce_x,(int)lblRvce_y, (int)lblRvce_width, (int)lblRvce_height);
+		//textArea.setBounds((int)lblRvce_x,(int)lblRvce_y, 200, 90);
+		//System.out.println((int)lblRvce_width+" "+(int)lblRvce_x+" "+(int)lblRvce_y+" "+(int)lblRvce_height);
 		textpanel.add(textArea);
 		textArea.setText("display");
 		textThread=new Thread(new Display());

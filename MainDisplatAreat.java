@@ -3,6 +3,7 @@ package rvce.Display.com;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
 import javax.swing.JEditorPane;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.apache.poi.hslf.HSLFSlideShow;
@@ -37,9 +39,10 @@ public class MainDisplatAreat implements Runnable{
 	JPanel textpanel=MainWindow.textpanel;
 	JPanel htmlpanel=MainWindow.htmlpanel;
 	JEditorPane htmlpane=MainWindow.htmlpane;
+	JLabel slidelabel=MainWindow.slidelabel;
 
 	String dirName="f:\\Priority1";
-	Scanner s=null;
+	//Scanner s=null;
 	File dir=null;
 	String files[];
 	File openFile=null;
@@ -115,40 +118,66 @@ public class MainDisplatAreat implements Runnable{
 					fis.read(data);
 					fis.close();
 					//System.out.println("in file");
+					
 					String s = new String(data, "UTF-8");
 					//System.out.println("Ffile read and its content is "+s);
 
+
 					textpanel.setVisible(true);
+					slidelabel.setVisible(false);
 					imagepanel.setVisible(false);
 					htmlpanel.setVisible(false);
-					MainWindow.textArea.setText(s);
+					//					MainWindow.textArea.setText(s);
+					displayText(s);
 
 					TimeUnit.SECONDS.sleep(2);
 				}else if(Ext.equalsIgnoreCase(".html")){
 					System.out.println("In html case and setting page");
 					textpanel.setVisible(false);
 					imagepanel.setVisible(false);
+					slidelabel.setVisible(false);
 					MainWindow.htmlpane.setPage("file:///"+dirName+"\\"+files[i]);
 					htmlpanel.setVisible(true);
 					TimeUnit.SECONDS.sleep(2);
 
 
 				}else if(Ext.equalsIgnoreCase(".ppt")){
+					textpanel.setVisible(false);
+					imagepanel.setVisible(false);
+					htmlpanel.setVisible(false);
+					slidelabel.setVisible(true);
 					DisplayPpt(dirName+"/"+files[i]);
 
 				}else if(Ext.equalsIgnoreCase(".pptx")){
+					textpanel.setVisible(false);
+					imagepanel.setVisible(false);
+					htmlpanel.setVisible(false);
+					slidelabel.setVisible(true);
 					DisplayPptx(dirName+"/"+files[i]);
 					System.out.println("pptx comparision successfull");
 				}
 				else if(Ext.equalsIgnoreCase(".doc")){
+					textpanel.setVisible(true);
+					imagepanel.setVisible(false);
+					htmlpanel.setVisible(false);
+					slidelabel.setVisible(false);
 					DisplayDoc(dirName+"/"+files[i]);
 					System.out.println("pptx comparision successfull");
 				}
 				else if(Ext.equalsIgnoreCase(".docx")){
+					textpanel.setVisible(true);
+					imagepanel.setVisible(false);
+					htmlpanel.setVisible(false);
+					slidelabel.setVisible(false);
 					DisplayDocx(dirName+"/"+files[i]);
 					System.out.println("pptx comparision successfull");
 				}
 				else if(Ext.equalsIgnoreCase(".pdf")){
+					textpanel.setVisible(true);
+					imagepanel.setVisible(false);
+					htmlpanel.setVisible(false);
+					slidelabel.setVisible(false);
+					//DisplayPdf(dirName+"/"+files[i]);
 					DisplayPdf(dirName+"/"+files[i]);
 					System.out.println("pptx comparision successfull");
 				}
@@ -347,10 +376,8 @@ public class MainDisplatAreat implements Runnable{
 		XWPFDocument doc = new XWPFDocument(fis);
 		XWPFWordExtractor extract = new XWPFWordExtractor(doc);
 		// System.out.println(extract.getText());
-		MainWindow.textArea.setText(extract.getText());
-		textpanel.setVisible(true);
-		imagepanel.setVisible(false);
-		htmlpanel.setVisible(false);
+		displayText(extract.getText());
+		//MainWindow.textArea.setText(extract.getText());
 		TimeUnit.SECONDS.sleep(2);
 
 
@@ -361,29 +388,85 @@ public class MainDisplatAreat implements Runnable{
 		HWPFDocument doc = new HWPFDocument(fis);
 		WordExtractor extractor = new WordExtractor(doc);
 		// System.out.println(extractor.getText());
-		MainWindow.textArea.setText(extractor.getText());
-		textpanel.setVisible(true);
-		imagepanel.setVisible(false);
-		htmlpanel.setVisible(false);
+		displayText(extractor.getText());
+		//MainWindow.textArea.setText(extractor.getText());
+
 		TimeUnit.SECONDS.sleep(5);
 
 	}
 	private void DisplayPdf(String source) throws IOException, InterruptedException {
 		// TODO Auto-generated method stub
-		textpanel.setVisible(true);
-		imagepanel.setVisible(false);
-		htmlpanel.setVisible(false);
-		
+
+
 		String pageText;
-		 PdfReader reader = new PdfReader(source);
-	        int n = reader.getNumberOfPages();
-	        for(int i=1;i<=n;i++){
-	        	pageText=PdfTextExtractor.getTextFromPage(reader, i);
-	        	MainWindow.textArea.setText(pageText);
-	        	TimeUnit.SECONDS.sleep(2);
-	        }
-	        
-		
+		PdfReader reader = new PdfReader(source);
+		int n = reader.getNumberOfPages();
+		for(int i=1;i<=n;i++){
+			pageText=PdfTextExtractor.getTextFromPage(reader, i);
+			displayText(pageText);
+			//MainWindow.textArea.setText(pageText);
+			TimeUnit.SECONDS.sleep(2);
+		}
+
+
+	}
+	private void DisplayPdfWithImage(String source) throws IOException, InterruptedException {
+
 	}
 
-}
+
+	private void displayText(String text) throws InterruptedException{
+		
+		Rectangle r=MainWindow.textArea.getBounds();
+		float exnochars=20;
+		float exSize=500;
+		String curText=null;
+		boolean isTextRemaining=true;
+		
+		int nooflines=r.height/60;
+		if(nooflines==0){
+			nooflines=1;
+		}
+		
+		int textsize= (int)((exnochars/exSize)*(r.width));
+		textsize*=nooflines;
+		
+		
+		System.out.println(textsize);
+	
+		//System.out.println(r.width+" "+r.height+" "+r.x+" "+r.y);
+		
+		
+		
+		int length=text.length();
+		int start=0,end=-1;
+		
+		
+		
+		while(isTextRemaining){
+			
+			
+			start=end+1;
+			end=end+textsize;
+			if(end>=(length-1)){
+				end=length-1;
+				isTextRemaining=false;
+				curText=text.substring(start, end);
+				MainWindow.textArea.setText(curText);
+				TimeUnit.SECONDS.sleep(5);
+				continue;
+			}
+			
+			while(text.charAt(end)!=' '){
+				end--;
+			}
+			
+			curText=text.substring(start, end);
+				
+				MainWindow.textArea.setText(curText);
+				TimeUnit.SECONDS.sleep(5);
+			}
+
+			//MainWindow.textArea.setText(text);
+		}
+	}
