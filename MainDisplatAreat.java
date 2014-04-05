@@ -183,9 +183,12 @@ public class MainDisplatAreat implements Runnable{
 				}
 				else{
 					//System.out.println(".jpg comparision worked");
-					MainWindow.lblRvce.setIcon(new ImageIcon(dirName+"\\"+files[i]));
-					textpanel.setVisible(false);
+					
+						ImageIcon ic=getResizedImageIcon(dirName+"\\"+files[i]);
+					//MainWindow.lblRvce.setIcon(new ImageIcon(dirName+"\\"+files[i]));
+						MainWindow.lblRvce.setIcon(ic);
 					imagepanel.setVisible(true);
+					textpanel.setVisible(false);
 					htmlpanel.setVisible(false);
 
 					TimeUnit.SECONDS.sleep(2);
@@ -202,6 +205,11 @@ public class MainDisplatAreat implements Runnable{
 
 
 
+
+
+
+
+	
 
 
 
@@ -469,4 +477,12 @@ public class MainDisplatAreat implements Runnable{
 
 			//MainWindow.textArea.setText(text);
 		}
+	
+	private ImageIcon getResizedImageIcon(String string) {
+		 ImageIcon icon = new ImageIcon(string);
+		 icon = new ImageIcon(icon.getImage().getScaledInstance((int)MainWindow.lblRvce_width, (int)MainWindow.lblRvce_height, BufferedImage.SCALE_SMOOTH));
+		 
+		return icon;
 	}
+
+}
